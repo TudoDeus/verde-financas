@@ -83,7 +83,28 @@
 }
 @media(max-width:380px){.mobile-wallet-actions{gap:4px}.mobile-wallet-action,.mobile-wallet-calendar{width:36px;height:36px}.mobile-wallet-brand{font-size:19px}}
 .due-badge{display:inline-flex;align-items:center;padding:4px 8px;border-radius:999px;font-size:10px;font-weight:750;white-space:nowrap}.due-paid{color:#18754c;background:#e1f6e9}.due-overdue,.due-today{color:#b7282f;background:#ffe5e6}.due-soon{color:#a55d00;background:#fff0d4}.due-upcoming{color:#8a6c19;background:#fff7d9}.due-normal{color:#63746c;background:#eef2ef}.due-today{animation:duePulse 2.8s ease-in-out infinite}@keyframes duePulse{50%{box-shadow:0 0 0 4px rgba(183,40,47,.1)}}@media(prefers-reduced-motion:reduce){.due-today{animation:none}}
-.bank-carousel{gap:14px;padding-top:8px;padding-bottom:18px}.bank-tile{min-height:250px;border-radius:29px;padding:27px 28px 25px;box-shadow:0 10px 26px rgba(12,77,59,.11);gap:22px}.bank-tile.account{background:linear-gradient(130deg,#198e78 0%,#16836f 100%)}.bank-tile:after{display:none}.bank-tile-top{align-items:center}.bank-tile-top span{font-size:17px;font-weight:650;letter-spacing:-.35px;opacity:1}.bank-tile-top span svg{vertical-align:middle;width:22px;height:22px;margin-right:5px}.bank-tile-center{margin:auto 0}.bank-tile-center small{display:block;font-size:13px;letter-spacing:-.1px;color:rgba(255,255,255,.84)}.bank-tile-center strong{font-size:clamp(32px,5vw,44px);line-height:1.12;letter-spacing:-1.65px;font-weight:750;margin:7px 0 0}.bank-tile-foot{min-height:48px;padding:12px 18px;border-radius:999px;background:rgba(255,255,255,.15);justify-content:center;text-align:center;transition:background .2s}.bank-tile:hover .bank-tile-foot{background:rgba(255,255,255,.22)}.bank-tile-foot span{font-size:12px;font-weight:650;opacity:1}.bank-tile-foot svg{width:16px;height:16px;opacity:.8}.bank-tile.credit .bank-tile-center strong{font-size:clamp(30px,4.5vw,41px)}@media(max-width:650px){.bank-tile{min-height:235px;padding:24px 22px 22px;border-radius:25px;gap:16px}.bank-tile-center strong{font-size:clamp(31px,9vw,40px)}.bank-tile-top span{font-size:16px}.bank-tile-foot{min-height:46px;padding:10px 12px}}</style>
+.bank-carousel{gap:14px;padding-top:8px;padding-bottom:18px}.bank-tile{min-height:250px;border-radius:29px;padding:27px 28px 25px;box-shadow:0 10px 26px rgba(12,77,59,.11);gap:22px}.bank-tile.account{background:linear-gradient(130deg,#198e78 0%,#16836f 100%)}.bank-tile:after{display:none}.bank-tile-top{align-items:center}.bank-tile-top span{font-size:17px;font-weight:650;letter-spacing:-.35px;opacity:1}.bank-tile-top span svg{vertical-align:middle;width:22px;height:22px;margin-right:5px}.bank-tile-center{margin:auto 0}.bank-tile-center small{display:block;font-size:13px;letter-spacing:-.1px;color:rgba(255,255,255,.84)}.bank-tile-center strong{font-size:clamp(32px,5vw,44px);line-height:1.12;letter-spacing:-1.65px;font-weight:750;margin:7px 0 0}.bank-tile-foot{min-height:48px;padding:12px 18px;border-radius:999px;background:rgba(255,255,255,.15);justify-content:center;text-align:center;transition:background .2s}.bank-tile:hover .bank-tile-foot{background:rgba(255,255,255,.22)}.bank-tile-foot span{font-size:12px;font-weight:650;opacity:1}.bank-tile-foot svg{width:16px;height:16px;opacity:.8}.bank-tile.credit .bank-tile-center strong{font-size:clamp(30px,4.5vw,41px)}@media(max-width:650px){.bank-tile{min-height:235px;padding:24px 22px 22px;border-radius:25px;gap:16px}.bank-tile-center strong{font-size:clamp(31px,9vw,40px)}.bank-tile-top span{font-size:16px}.bank-tile-foot{min-height:46px;padding:10px 12px}}
+/* Unified typography: inspired by the wallet reference throughout the app */
+:root{font-family:Inter,"Segoe UI",Roboto,ui-sans-serif,system-ui,-apple-system,sans-serif;font-optical-sizing:auto;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body{font-size:14px;line-height:1.5;letter-spacing:-.012em}
+h1,h2,h3,.page-title h1,.panel-header h2{letter-spacing:-.035em;font-weight:720;line-height:1.2}
+.page-title h1{font-size:clamp(27px,3vw,37px);font-weight:750;letter-spacing:-.045em}
+.page-title p,.panel-header p,.hero-desc,.metric-description,.muted{line-height:1.55}
+.brand{font-weight:750;letter-spacing:-.045em}
+.nav-btn,.button,.hero-action,.subtle-link,.month-control strong{font-weight:650;letter-spacing:-.015em}
+.crumb,.side-caption{font-weight:700;letter-spacing:.08em}
+.hero-amount,.metric-value,.entry-amount,.statement-summary strong,.card-stat strong,.balance-hero strong{font-variant-numeric:tabular-nums;font-feature-settings:"tnum";letter-spacing:-.045em;font-weight:750}
+.hero-amount{line-height:1.13}
+.metric-value{font-weight:740}
+.entry-name{font-weight:650;letter-spacing:-.02em}
+.entry-detail,.entry-detail span,.entry-detail label{line-height:1.5}
+.panel-header h2{font-size:17px}
+.card-stat p,.field label,.field .hint{letter-spacing:-.01em}
+input,select,textarea,button{font-family:inherit;letter-spacing:inherit}
+input,select,textarea{font-weight:450}
+.bank-tile-top span,.bank-tile-center strong,.bank-tile-foot span{font-family:inherit}
+@media(max-width:480px){.page-title h1{font-size:27px}.panel-header h2{font-size:16px}.hero-amount{font-size:35px}.entry-name{font-size:12px}}
+</style>
 </head>
 <body>
   <div id="app"></div>
