@@ -1,0 +1,1 @@
+window.VERDE_CONFIG={url:"https://gfartffchxedowhgydlh.supabase.co",anonKey:"sb_publishable_IhzeyPal0CqvEJ6iyz3Bzw_HtFfOaYX"};
