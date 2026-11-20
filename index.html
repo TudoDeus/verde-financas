@@ -3,7 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#10291f">
+  <meta name="theme-color" content="#0e9c78">
+  <meta name="application-name" content="Verde Finanças">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Verde Finanças">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" type="image/svg+xml" href="/icons/verde.svg">
+  <link rel="apple-touch-icon" href="/icons/icon-192.png">
   <meta name="description" content="Controle suas contas, cartões, parcelas e previsões financeiras em um só lugar.">
   <title>Verde | Seu controle financeiro</title>
   <style>
@@ -454,7 +461,7 @@
       }
     });
     app.addEventListener('change',e=>{
-      if(e.target.id==='mobile-month-picker'&&/^\\d{4}-(0[1-9]|1[0-2])$/.test(e.target.value)){selectedMonth=e.target.value;render()}
+      if(e.target.id==='mobile-month-picker'&&monthRE.test(e.target.value)){selectedMonth=e.target.value;render()}
       else if(e.target.id==='statement-sort'){statementSort=e.target.value;render()}
       else if(e.target.id==='statement-status'){statementStatus=e.target.value;render()}
     });
@@ -463,5 +470,8 @@
     window.VerdeCloud.start({load:remote=>{data=normalizeData(remote);monthCache.clear();render()},initial:()=>{data=defaultData();monthCache.clear();render();return data},notice:toast});
   })();
   </script>
+<script>
+  if ("serviceWorker" in navigator) window.addEventListener("load",()=>navigator.serviceWorker.register("/sw.js").catch(err=>console.warn("Instalação offline indisponível:",err)));
+</script>
 </body>
 </html>
