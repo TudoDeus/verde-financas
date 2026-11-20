@@ -1,5 +1,7 @@
 (()=>{'use strict';
-let client,user,version=0,last='',pending=null,busy=false,timer,api,blocked=false;
+let client,user,version=0,last='',pending=null,busy=false,timer,api,blocked=false,demo=false;
+const demoKey='verde_demo_data_v1';
+function demoEnter(){demo=true;user={id:'demo-local'};const stored=localStorage.getItem(demoKey);try{if(stored){api.load(JSON.parse(stored))}else{const initial=api.initial();localStorage.setItem(demoKey,JSON.stringify(initial))}}catch(e){api.initial()}gate.style.display='none';status('Modo demonstração: dados salvos apenas neste navegador.');}
 const gate=document.getElementById('auth-gate'),form=document.getElementById('auth-form');
 const msg=t=>document.getElementById('auth-message').textContent=t;
 function status(t){api?.notice?.(t)}
@@ -19,11 +21,12 @@ if(data){version=data.version;last=JSON.stringify(data.payload);api.load(data.pa
 if(localStorage.getItem('verde_unsynced_backup')){status('Existe backup local de alterações não sincronizadas.');alert('Há alterações não sincronizadas neste navegador. Confira o backup local.');}
 gate.style.display='none';}catch(e){user=null;msg('Erro ao carregar: '+e.message)}}
 window.VerdeCloud={
-save(d){if(!user||blocked){emergency(d);status('Dados não sincronizados — exporte backup JSON');return}pending=JSON.parse(JSON.stringify(d));emergency(pending);clearTimeout(timer);timer=setTimeout(flush,450)},
-async signOut(){if(pending){await flush();if(pending||blocked){alert('Há dados não sincronizados. Exporte backup antes de sair.');return}}await client.auth.signOut();location.reload()},
+save(d){if(demo){try{localStorage.setItem(demoKey,JSON.stringify(d));status('Demonstração salva neste navegador')}catch(e){status('Armazenamento local indisponível')}return}if(!user||blocked){emergency(d);status('Dados não sincronizados — exporte backup JSON');return}pending=JSON.parse(JSON.stringify(d));emergency(pending);clearTimeout(timer);timer=setTimeout(flush,450)},
+async signOut(){if(demo){demo=false;location.reload();return}if(pending){await flush();if(pending||blocked){alert('Há dados não sincronizados. Exporte backup antes de sair.');return}}await client.auth.signOut();location.reload()},
 async start(callbacks){api=callbacks;const cfg=window.VERDE_CONFIG;
 if(!cfg?.url?.startsWith('https://')||!cfg?.anonKey||!window.supabase){msg('Erro de configuração Supabase.');form.style.display='none';return}
 client=window.supabase.createClient(cfg.url,cfg.anonKey,{auth:{persistSession:true,autoRefreshToken:true}});
+document.getElementById('demo-login').onclick=()=>{const login=document.getElementById('demo-user').value.trim(),pass=document.getElementById('demo-password').value;if(login!=='Admin'||pass!=='Admin'){msg('Login ou senha de teste inválidos.');return}demoEnter()};
 const {data:{session},error}=await client.auth.getSession();if(error)msg(error.message);if(session)await enter(session);
 form.onsubmit=async e=>{e.preventDefault();msg('Entrando...');const {data,error}=await client.auth.signInWithPassword({email:document.getElementById('auth-email').value,password:document.getElementById('auth-password').value});if(error)msg(error.message);else await enter(data.session)};
 document.getElementById('auth-signup').onclick=async()=>{const email=document.getElementById('auth-email').value,password=document.getElementById('auth-password').value;if(!email||password.length<6){msg('Informe e-mail e senha de pelo menos 6 caracteres.');return}msg('Criando conta...');const {data,error}=await client.auth.signUp({email,password});if(error)msg(error.message);else if(data.session)await enter(data.session);else msg('Confirme seu e-mail e depois entre.')};
