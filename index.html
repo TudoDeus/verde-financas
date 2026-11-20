@@ -23,6 +23,9 @@
 
 /* Animated carry-over balance controls */
 .bank-tile{animation:bankAppear .48s cubic-bezier(.2,.75,.25,1) both}.bank-tile:nth-child(2){animation-delay:.09s}.bank-tile:nth-child(3){animation-delay:.16s}.bank-tile-center strong,.statement-summary strong{transition:color .22s ease,opacity .22s ease,transform .22s ease}.bank-tile-center strong.is-negative,.statement-summary strong.is-negative{color:#ff8888}.bank-tile-center strong.is-positive,.statement-summary strong.is-positive{color:#fff}.bank-tile .bank-tile-top{padding-right:2px}.bank-eye{display:inline-grid;place-items:center;width:38px;height:38px;border:1px solid rgba(255,255,255,.3);border-radius:12px;background:rgba(255,255,255,.12);color:white;cursor:pointer;transition:background .2s,transform .2s}.bank-eye:hover{background:rgba(255,255,255,.24);transform:scale(1.06)}.bank-eye:focus-visible{outline:3px solid #a7ffcb;outline-offset:2px}.bank-eye svg{width:20px;height:20px}.bank-tile .bank-tile-center strong{animation:bankNumber .32s ease both}.bank-tile:focus-visible{outline:3px solid #a7ffcb;outline-offset:3px}@keyframes bankAppear{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}@keyframes bankNumber{from{opacity:.5;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}@media(prefers-reduced-motion:reduce){.bank-tile,.bank-tile-center strong,.statement-summary strong{animation:none!important;transition:none!important}}
+
+/* Statement filters */
+.statement-filters{display:flex;flex-wrap:wrap;align-items:end;gap:12px;padding:16px 19px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:#fafcfb}.statement-filter-field{display:flex;flex-direction:column;gap:6px;min-width:175px;flex:1}.statement-filter-field label{font-size:11px;font-weight:750;color:var(--sub)}.statement-filter-field select{width:100%;padding:10px 12px;border-radius:11px;border:1px solid var(--line);background:white;color:var(--ink);font-size:13px}.statement-filter-reset{border:1px solid var(--line);background:#fff;color:var(--deep);border-radius:11px;padding:10px 14px;font-size:12px;font-weight:750}.statement-filter-result{padding:10px 19px;font-size:12px;color:var(--sub)}@media(max-width:600px){.statement-filters{gap:9px;padding:13px}.statement-filter-field{min-width:125px}.statement-filter-field select{font-size:12px}}
 </style>
 </head>
 <body>
@@ -192,14 +195,28 @@
       const cards=data.cards.map(c=>{const bill=m.perCard[c.id]||0;const available=(Number(c.limit)||0)-bill;return `<div class="bank-tile credit ${esc(c.color||'')}" role="button" tabindex="0" data-statement-type="credit" data-statement-id="${esc(c.id)}" aria-label="Abrir extrato do cartão ${esc(c.name)}"><div class="bank-tile-top"><span>${icon('card',19)} ${esc(c.brand||'Cartão de crédito')}</span><span>${esc(c.name)}</span></div><div class="bank-tile-center"><small>Fatura de ${esc(monthLabel(selectedMonth))}</small><strong class="${bill<0?'is-negative':'is-positive'}">${money(bill)}</strong></div><div class="bank-tile-foot"><span>Limite disponível neste mês: ${money(available)}</span>${icon('chevRight',21)}</div></div>`}).join('');
       return `<div class="bank-carousel" aria-label="Contas e cartões, deslize para navegar">${accounts}${cards}</div><p class="bank-carousel-hint">${icon('chevRight',14)} Deslize para ver os cartões • toque no olho para alternar saldo mensal/acumulado</p>`;
     }
+    let statementSort='date-desc',statementStatus='all';
+    function statementFilteredRows(rows){
+      const originalIndex=new Map(data.entries.map((e,i)=>[e.id,i]));
+      const filtered=rows.filter(r=>statementStatus==='all'||r.status===statementStatus);
+      filtered.sort((a,b)=>{
+        if(statementSort==='added-desc')return (originalIndex.get(b.id)??-1)-(originalIndex.get(a.id)??-1)||b.date.localeCompare(a.date);
+        if(statementSort==='amount-desc')return b.amount-a.amount||b.date.localeCompare(a.date);
+        if(statementSort==='amount-asc')return a.amount-b.amount||b.date.localeCompare(a.date);
+        if(statementSort==='date-asc')return a.date.localeCompare(b.date);
+        return b.date.localeCompare(a.date);
+      });
+      return filtered;
+    }
     function statementPage(){
       const isCredit=statementTarget?.type==='credit';
       const entity=isCredit?data.cards.find(c=>c.id===statementTarget.id):data.accounts.find(a=>a.id===statementTarget?.id);
       if(!entity){view='overview';statementTarget=null;return overview()}
       const rows=monthStats(selectedMonth).rows.filter(r=>isCredit?r.method==='credit'&&r.cardId===entity.id:r.accountId===entity.id);
+      const visibleRows=statementFilteredRows(rows);
       const amount=isCredit?rows.reduce((sum,r)=>sum+r.amount,0):accountStatementBalance(entity.id,selectedMonth);
       const amountText=isCredit?'Fatura do período':(showAccumulatedBalance?'Saldo acumulado previsto':'Resultado previsto do mês');
-      return `<button class="statement-back" data-action="back-overview">${icon('chevLeft',18)} Voltar para início</button>${pageHeader(isCredit?'Extrato do cartão':'Extrato da conta',esc(entity.name),false)}<div class="control-row">${monthSelector()}<button class="button secondary small" data-action="current-month">Ir para o mês atual</button></div><section class="statement-summary ${isCredit?'credit':''}"><span>${amountText} · ${esc(monthLabel(selectedMonth))}</span><strong class="${amount!==null&&amount<0?'is-negative':'is-positive'}">${amount===null?'—':money(amount)}</strong><p>${isCredit?'Compras e parcelas lançadas neste cartão.':'Inclui movimentações diretas e faturas vinculadas a esta conta; as compras também podem ser consultadas no extrato do cartão.'}</p></section><section class="panel"><div class="panel-header"><div><h2>Movimentações</h2><p>${rows.length} lançamento${rows.length===1?'':'s'} no período</p></div></div>${rows.length?`<div class="statement-list">${rows.map(rowHTML).join('')}</div>`:emptyHTML('Nenhuma movimentação neste mês','Experimente outro mês ou adicione um lançamento.')}</section>`;
+      return `<button class="statement-back" data-action="back-overview">${icon('chevLeft',18)} Voltar para início</button>${pageHeader(isCredit?'Extrato do cartão':'Extrato da conta',esc(entity.name),false)}<div class="control-row">${monthSelector()}<button class="button secondary small" data-action="current-month">Ir para o mês atual</button></div><section class="statement-summary ${isCredit?'credit':''}"><span>${amountText} · ${esc(monthLabel(selectedMonth))}</span><strong class="${amount!==null&&amount<0?'is-negative':'is-positive'}">${amount===null?'—':money(amount)}</strong><p>${isCredit?'Compras e parcelas lançadas neste cartão.':'Inclui movimentações diretas e faturas vinculadas a esta conta; as compras também podem ser consultadas no extrato do cartão.'}</p></section><section class="panel"><div class="panel-header"><div><h2>Movimentações</h2><p>${rows.length} lançamento${rows.length===1?'':'s'} no período</p></div></div><div class="statement-filters"><div class="statement-filter-field"><label for="statement-sort">Ordenar por</label><select id="statement-sort"><option value="date-desc" ${statementSort==='date-desc'?'selected':''}>Data mais recente</option><option value="added-desc" ${statementSort==='added-desc'?'selected':''}>Adicionados recentemente</option><option value="amount-desc" ${statementSort==='amount-desc'?'selected':''}>Maior valor</option><option value="amount-asc" ${statementSort==='amount-asc'?'selected':''}>Menor valor</option><option value="date-asc" ${statementSort==='date-asc'?'selected':''}>Data mais antiga</option></select></div><div class="statement-filter-field"><label for="statement-status">Situação</label><select id="statement-status"><option value="all" ${statementStatus==='all'?'selected':''}>Todos</option><option value="pago" ${statementStatus==='pago'?'selected':''}>Pagos</option><option value="pendente" ${statementStatus==='pendente'?'selected':''}>Pendentes</option><option value="reservado" ${statementStatus==='reservado'?'selected':''}>Reservados</option></select></div><button class="statement-filter-reset" type="button" data-action="reset-statement-filters">Limpar filtros</button></div><div class="statement-filter-result">Exibindo ${visibleRows.length} de ${rows.length} lançamentos · os filtros não alteram o saldo</div>${visibleRows.length?`<div class="statement-list">${visibleRows.map(rowHTML).join('')}</div>`:emptyHTML('Nenhum lançamento encontrado','Tente outro filtro ou outro mês.',null)}</section>`;
     }
     function overview(){
       const m=monthStats(selectedMonth),balance=balanceThrough(selectedMonth),showCarry=data.settings.carryover;const display=showCarry?balance:m.net;
@@ -295,12 +312,13 @@
     app.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.matches('[data-statement-type]')){e.preventDefault();e.target.click()}});
     app.addEventListener('click',e=>{
       const eyeBtn=e.target.closest('[data-action="toggle-balance-carry"]');if(eyeBtn){showAccumulatedBalance=!showAccumulatedBalance;render();return}
-      const statementBtn=e.target.closest('[data-statement-type]');if(statementBtn){statementTarget={type:statementBtn.dataset.statementType,id:statementBtn.dataset.statementId};view='statement';render();window.scrollTo({top:0,behavior:'instant'});return}
+      const statementBtn=e.target.closest('[data-statement-type]');if(statementBtn){statementSort='date-desc';statementStatus='all';statementTarget={type:statementBtn.dataset.statementType,id:statementBtn.dataset.statementId};view='statement';render();window.scrollTo({top:0,behavior:'instant'});return}
       const viewBtn=e.target.closest('[data-view]');if(viewBtn){view=viewBtn.dataset.view;search='';render();window.scrollTo({top:0,behavior:'instant'});return}
       const filterBtn=e.target.closest('[data-filter]');if(filterBtn){filter=filterBtn.dataset.filter;render();return}
       const horizonBtn=e.target.closest('[data-horizon]');if(horizonBtn){forecastCount=Number(horizonBtn.dataset.horizon);render();return}
       const btn=e.target.closest('[data-action]');if(!btn)return;const action=btn.dataset.action,id=btn.dataset.id;
-      if(action==='back-overview'){view='overview';statementTarget=null;render();window.scrollTo({top:0,behavior:'instant'})}
+      if(action==='reset-statement-filters'){statementSort='date-desc';statementStatus='all';render()}
+      else if(action==='back-overview'){view='overview';statementTarget=null;render();window.scrollTo({top:0,behavior:'instant'})}
       else if(action==='prev-month'){selectedMonth=addMonth(selectedMonth,-1);render()}
       else if(action==='next-month'){selectedMonth=addMonth(selectedMonth,1);render()}
       else if(action==='current-month'){selectedMonth=thisMonth;render()}
@@ -378,6 +396,10 @@
         if(editId){const idx=data.categories.findIndex(x=>x.id===editId);if(idx<0)return;data.categories[idx]=c}else data.categories.push(c);
         dialog.close();refresh();toast('Categoria salva.')
       }
+    });
+    app.addEventListener('change',e=>{
+      if(e.target.id==='statement-sort'){statementSort=e.target.value;render()}
+      else if(e.target.id==='statement-status'){statementStatus=e.target.value;render()}
     });
     app.addEventListener('submit',e=>{if(e.target.id!=='settings-form')return;e.preventDefault();const f=Object.fromEntries(new FormData(e.target));if(!monthRE.test(f.openingMonth)){toast('Mês-base inválido.');return}data.settings.openingMonth=f.openingMonth;refresh();toast('Mês-base salvo.')});
     document.getElementById('backup-file').addEventListener('change',async e=>{const file=e.target.files?.[0];e.target.value='';if(!file)return;if(file.size>5*1024*1024){toast('Backup acima do limite de 5 MB.');return}try{const parsed=normalizeData(JSON.parse(await file.text()));if(!confirm(`Importar ${parsed.entries.length} lançamentos e ${parsed.cards.length} cartões? Isso SUBSTITUIRÁ os dados atuais da sua conta online.`))return;data=parsed;selectedMonth=thisMonth;view='overview';search='';refresh();toast('Backup importado com sucesso.')}catch(err){toast(`Não foi possível importar: ${err.message||'arquivo inválido'}`)}});
