@@ -169,16 +169,11 @@
 
     let statementTarget=null;
     function accountStatementBalance(accountId,month){
-      const account=data.accounts.find(a=>a.id===accountId);if(!account||month<data.settings.openingMonth)return null;
-      let total=account.openingBalance;
-      const count=monthsBetween(data.settings.openingMonth,month);if(count>1200)return null;
-      for(let i=0;i<=count;i++)for(const r of monthStats(addMonth(data.settings.openingMonth,i)).rows)
-        if(r.method==='account'&&r.accountId===accountId)total+=r.kind==='income'?r.amount:-r.amount;
-      return Math.round(total*100)/100;
+      return accountBalanceThrough(accountId,month);
     }
     function bankCarousel(){
       const m=monthStats(selectedMonth);
-      const accounts=data.accounts.map(a=>`<button type="button" class="bank-tile account" data-statement-type="account" data-statement-id="${esc(a.id)}" aria-label="Abrir extrato da conta ${esc(a.name)}"><div class="bank-tile-top"><span>${icon('wallet',19)} Conta digital</span><span>${esc(a.name)}</span></div><div class="bank-tile-center"><small>Saldo previsto na conta</small><strong>${money(accountStatementBalance(a.id,selectedMonth)??0)}</strong></div><div class="bank-tile-foot"><span>Ver extrato da conta</span>${icon('chevRight',21)}</div></button>`).join('');
+      const accounts=data.accounts.map(a=>`<button type="button" class="bank-tile account" data-statement-type="account" data-statement-id="${esc(a.id)}" aria-label="Abrir extrato da conta ${esc(a.name)}"><div class="bank-tile-top"><span>${icon('wallet',19)} Conta digital</span><span>${esc(a.name)}</span></div><div class="bank-tile-center"><small>Saldo previsto na conta</small><strong>${(accountStatementBalance(a.id,selectedMonth)===null?'—':money(accountStatementBalance(a.id,selectedMonth)))}</strong></div><div class="bank-tile-foot"><span>Ver extrato da conta</span>${icon('chevRight',21)}</div></button>`).join('');
       const cards=data.cards.map(c=>{const bill=m.perCard[c.id]||0;const available=(Number(c.limit)||0)-bill;return `<button type="button" class="bank-tile credit ${esc(c.color||'')}" data-statement-type="credit" data-statement-id="${esc(c.id)}" aria-label="Abrir extrato do cartão ${esc(c.name)}"><div class="bank-tile-top"><span>${icon('card',19)} ${esc(c.brand||'Cartão de crédito')}</span><span>${esc(c.name)}</span></div><div class="bank-tile-center"><small>Fatura de ${esc(monthLabel(selectedMonth))}</small><strong>${money(bill)}</strong></div><div class="bank-tile-foot"><span>Limite disponível neste mês: ${money(available)}</span>${icon('chevRight',21)}</div></button>`}).join('');
       return `<div class="bank-carousel" aria-label="Contas e cartões, deslize para navegar">${accounts}${cards}</div><p class="bank-carousel-hint">${icon('chevRight',14)} Deslize para ver os cartões • toque para abrir o extrato</p>`;
     }
@@ -186,10 +181,10 @@
       const isCredit=statementTarget?.type==='credit';
       const entity=isCredit?data.cards.find(c=>c.id===statementTarget.id):data.accounts.find(a=>a.id===statementTarget?.id);
       if(!entity){view='overview';statementTarget=null;return overview()}
-      const rows=monthStats(selectedMonth).rows.filter(r=>isCredit?r.method==='credit'&&r.cardId===entity.id:r.method==='account'&&r.accountId===entity.id);
+      const rows=monthStats(selectedMonth).rows.filter(r=>isCredit?r.method==='credit'&&r.cardId===entity.id:r.accountId===entity.id);
       const amount=isCredit?rows.reduce((sum,r)=>sum+r.amount,0):accountStatementBalance(entity.id,selectedMonth);
       const amountText=isCredit?'Fatura do período':'Saldo previsto da conta';
-      return `<button class="statement-back" data-action="back-overview">${icon('chevLeft',18)} Voltar para início</button>${pageHeader(isCredit?'Extrato do cartão':'Extrato da conta',esc(entity.name),false)}<div class="control-row">${monthSelector()}<button class="button secondary small" data-action="current-month">Ir para o mês atual</button></div><section class="statement-summary ${isCredit?'credit':''}"><span>${amountText} · ${esc(monthLabel(selectedMonth))}</span><strong>${amount===null?'—':money(amount)}</strong><p>${isCredit?'Compras e parcelas lançadas neste cartão.':'Somente movimentações diretas desta conta; compras no cartão ficam no extrato do cartão.'}</p></section><section class="panel"><div class="panel-header"><div><h2>Movimentações</h2><p>${rows.length} lançamento${rows.length===1?'':'s'} no período</p></div></div>${rows.length?`<div class="statement-list">${rows.map(rowHTML).join('')}</div>`:emptyHTML('Nenhuma movimentação neste mês','Experimente outro mês ou adicione um lançamento.')}</section>`;
+      return `<button class="statement-back" data-action="back-overview">${icon('chevLeft',18)} Voltar para início</button>${pageHeader(isCredit?'Extrato do cartão':'Extrato da conta',esc(entity.name),false)}<div class="control-row">${monthSelector()}<button class="button secondary small" data-action="current-month">Ir para o mês atual</button></div><section class="statement-summary ${isCredit?'credit':''}"><span>${amountText} · ${esc(monthLabel(selectedMonth))}</span><strong>${amount===null?'—':money(amount)}</strong><p>${isCredit?'Compras e parcelas lançadas neste cartão.':'Inclui movimentações diretas e faturas vinculadas a esta conta; as compras também podem ser consultadas no extrato do cartão.'}</p></section><section class="panel"><div class="panel-header"><div><h2>Movimentações</h2><p>${rows.length} lançamento${rows.length===1?'':'s'} no período</p></div></div>${rows.length?`<div class="statement-list">${rows.map(rowHTML).join('')}</div>`:emptyHTML('Nenhuma movimentação neste mês','Experimente outro mês ou adicione um lançamento.')}</section>`;
     }
     function overview(){
       const m=monthStats(selectedMonth),balance=balanceThrough(selectedMonth),showCarry=data.settings.carryover;const display=showCarry?balance:m.net;
