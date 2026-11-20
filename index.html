@@ -50,6 +50,31 @@
 }
 @media(max-width:390px){.mobile-shortcut{flex-basis:80px}.mobile-shortcut-icon{width:67px;height:67px}.mobile-wallet-brand{font-size:21px}}
 @media(prefers-reduced-motion:reduce){.mobile-shortcut-icon{transition:none}}
+
+/* Compact mobile toolbar and native month picker */
+@media(max-width:760px){
+ .mobile-wallet-head{gap:7px;padding-left:16px;padding-right:16px}
+ .mobile-wallet-actions{display:flex;align-items:center;gap:7px;flex:none}
+ .mobile-wallet-action,.mobile-wallet-calendar{position:relative;display:grid;place-items:center;width:40px;height:40px;flex:none;border:1px solid rgba(255,255,255,.22);border-radius:13px;background:rgba(255,255,255,.14);color:#fff;cursor:pointer;overflow:hidden}
+ .mobile-wallet-action:active,.mobile-wallet-calendar:active{background:rgba(255,255,255,.3)}
+ .mobile-wallet-calendar input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;border:0;font-size:16px}
+ .mobile-wallet-calendar input::-webkit-calendar-picker-indicator{position:absolute;inset:0;width:100%;height:100%;cursor:pointer;opacity:0}
+ .mobile-wallet-calendar:focus-within,.mobile-wallet-action:focus-visible{outline:2px solid white;outline-offset:3px}
+ .mobile-wallet-brand{font-size:21px}.mobile-wallet-brand .brand-symbol{width:33px;height:33px}.mobile-wallet-brand .wallet-sub{font-size:10px}
+ .main>.page-title,.main>.control-row{display:none}
+ .main>.page-title + .control-row{display:none}
+ .main>.mobile-wallet-head + .topbar + .page-title{display:none}
+ .main>.mobile-wallet-head + .topbar + .page-title + .control-row{display:none}
+ .main>.mobile-wallet-head + .topbar + .statement-back + .page-title + .control-row{display:none}
+ .main>.mobile-wallet-head + .topbar + .statement-back + .page-title{display:none}
+ .main>.mobile-wallet-head + .topbar + .statement-back{margin-top:18px}
+ .main>.mobile-wallet-head + .topbar + .page-title + .control-row + .bank-carousel{margin-top:20px}
+ .main>.mobile-wallet-head + .topbar + .page-title + .control-row + .warning + .bank-carousel{margin-top:20px}
+ .main>.mobile-wallet-head + .topbar + .page-title + .control-row + .grid{margin-top:20px}
+ .main>.mobile-wallet-head + .topbar + .page-title + .control-row + .card-grid{margin-top:20px}
+ .main>.mobile-wallet-head + .topbar + .page-title + .control-row + .account-grid{margin-top:20px}
+}
+@media(max-width:380px){.mobile-wallet-actions{gap:4px}.mobile-wallet-action,.mobile-wallet-calendar{width:36px;height:36px}.mobile-wallet-brand{font-size:19px}}
 </style>
 </head>
 <body>
@@ -184,7 +209,11 @@
     const navItems=[['overview','dashboard','Visão geral'],['transactions','receipt','Lançamentos'],['cards','card','Cartões'],['accounts','wallet','Contas'],['forecast','chart','Planejamento'],['settings','settings','Ajustes']];
     function navButton([id,ico,label]){return `<button class="nav-btn ${view===id?'active':''}" data-view="${id}" aria-current="${view===id?'page':'false'}">${icon(ico)}<span>${label}</span></button>`}
     const quickLinks=[['transactions','receipt','Lançamentos'],['cards','card','Cartões'],['accounts','wallet','Contas'],['forecast','chart','Planejamento'],['settings','settings','Ajustes']];
-    function mobileWalletHeader(){return `<header class="mobile-wallet-head"><button type="button" class="mobile-wallet-home" data-view="overview" aria-label="Voltar à visão geral"><div class="mobile-wallet-brand"><span class="brand-symbol">${icon('chart',22)}</span><div>verde<span style="opacity:.75">.</span><div class="wallet-sub">Seu dinheiro, organizado</div></div></div></button><button type="button" class="mobile-wallet-settings" data-view="settings" aria-label="Abrir ajustes">${icon('settings',21)}</button></header>`}
+    function mobileWalletHeader(){
+      const action=({overview:'add-entry',transactions:'add-entry',cards:'add-card',accounts:'add-account',statement:statementTarget?.type==='credit'?'add-entry':'add-entry'})[view];
+      const label=({overview:'Adicionar lançamento',transactions:'Adicionar lançamento',cards:'Adicionar cartão',accounts:'Adicionar conta',statement:'Adicionar lançamento'})[view];
+      return `<header class="mobile-wallet-head"><button type="button" class="mobile-wallet-home" data-view="overview" aria-label="Voltar à visão geral"><div class="mobile-wallet-brand"><span class="brand-symbol">${icon('chart',22)}</span><div>verde<span style="opacity:.75">.</span><div class="wallet-sub">Seu dinheiro, organizado</div></div></div></button><div class="mobile-wallet-actions">${action?`<button type="button" class="mobile-wallet-action" data-action="${action}" aria-label="${label}" title="${label}">${icon('plus',21)}</button>`:''}<label class="mobile-wallet-calendar" title="Selecionar mês" aria-label="Selecionar mês">${icon('calendar',21)}<input type="month" id="mobile-month-picker" value="${esc(selectedMonth)}" aria-label="Selecionar mês e ano"></label><button type="button" class="mobile-wallet-action" data-view="settings" aria-label="Abrir ajustes" title="Ajustes">${icon('settings',21)}</button></div></header>`;
+    }
     function mobileQuickLinks(){return `<nav class="mobile-shortcuts" aria-label="Acesso rápido">${quickLinks.map(([id,ico,label])=>`<button type="button" class="mobile-shortcut ${view===id?'active':''}" data-view="${id}" aria-current="${view===id?'page':'false'}"><span class="mobile-shortcut-icon">${icon(ico,25)}</span><span>${label}</span></button>`).join('')}</nav>`}
     function renderShell(content){return `<div class="app-shell"><aside class="sidebar"><div class="brand"><span class="brand-symbol">${icon('chart',22)}</span>verde<span class="brand-dot">.</span></div><div class="side-caption">Seu espaço</div><nav class="nav-group" aria-label="Navegação principal">${navItems.map(navButton).join('')}</nav><div class="side-bottom"><div class="side-message">${icon('shield',22)}<div style="margin-top:8px"><strong>Seus dados no seu controle.</strong></div><p>Dados sincronizados com sua conta. Faça backups regularmente.</p></div><button class="button secondary small" type="button" onclick="window.VerdeCloud.signOut()">Sair da conta</button><div class="side-foot">VERDE FINANÇAS • VERSÃO 2.2</div></div></aside><main class="main">${mobileWalletHeader()}<div class="topbar"><span class="crumb">FINANÇAS PESSOAIS / ${esc(navItems.find(n=>n[0]===view)?.[2]||'')}</span><span class="date-badge">${icon('calendar',13)} ${esc(new Intl.DateTimeFormat('pt-BR',{day:'2-digit',month:'short',year:'numeric'}).format(today))}</span></div>${content}</main></div>`}
     function pageHeader(title,desc,button=true){return `<div class="page-title"><div><h1>${title}</h1><p>${desc}</p></div>${button?`<button class="button primary" data-action="add-entry">${icon('plus')} Novo lançamento</button>`:''}</div>`}
@@ -425,7 +454,8 @@
       }
     });
     app.addEventListener('change',e=>{
-      if(e.target.id==='statement-sort'){statementSort=e.target.value;render()}
+      if(e.target.id==='mobile-month-picker'&&/^\\d{4}-(0[1-9]|1[0-2])$/.test(e.target.value)){selectedMonth=e.target.value;render()}
+      else if(e.target.id==='statement-sort'){statementSort=e.target.value;render()}
       else if(e.target.id==='statement-status'){statementStatus=e.target.value;render()}
     });
     app.addEventListener('submit',e=>{if(e.target.id!=='settings-form')return;e.preventDefault();const f=Object.fromEntries(new FormData(e.target));if(!monthRE.test(f.openingMonth)){toast('Mês-base inválido.');return}data.settings.openingMonth=f.openingMonth;refresh();toast('Mês-base salvo.')});
