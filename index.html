@@ -205,7 +205,7 @@
         const amount=e.repeat==='installments'?installmentValue(e.amount,index,e.installments):e.repeat==='monthly'&&Number.isFinite(e.monthAmounts?.[month])?e.monthAmounts[month]:e.amount;
         const date=card?clamped(month,card.dueDay):purchaseDate;
         const category=categoryMap[e.categoryId];const accountId=card?card.payAccountId:e.accountId;
-        rows.push({...e,amount,date,purchaseDate,billMonth:month,status:data.entryStatuses?.[`${e.id}|${month}`]||'pendente',index:index+1,count:e.repeat==='installments'?e.installments:null,cardName:card?.name||null,accountId:accountMap[accountId]?accountId:data.accounts[0].id,accountName:accountMap[accountId]?.name||data.accounts[0].name,category:category?.name||e.category,categoryImage:category?.image||null,cardImage:card?.image||null});
+        rows.push({...e,amount,date,purchaseDate,billMonth:month,status:data.entryStatuses?.[`${e.id}|${month}`]||(e.method==='account'&&e.repeat==='once'&&e.date<=new Date().toLocaleDateString('sv-SE')?'pago':'pendente'),index:index+1,count:e.repeat==='installments'?e.installments:null,cardName:card?.name||null,accountId:accountMap[accountId]?accountId:data.accounts[0].id,accountName:accountMap[accountId]?.name||data.accounts[0].name,category:category?.name||e.category,categoryImage:category?.image||null,cardImage:card?.image||null});
       }
       return rows.sort((a,b)=>b.date.localeCompare(a.date)||a.description.localeCompare(b.description));
     }
