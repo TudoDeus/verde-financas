@@ -156,7 +156,7 @@ input,select,textarea{font-weight:450}
 
 /* Subscription showcase on home */
 .subscriptions-panel{min-width:0}
-.subscription-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:7px}
+.subscription-grid{display:grid;grid-auto-flow:column;grid-auto-columns:calc((100% - 24px)/3);gap:12px;margin-top:7px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding:3px 2px 13px;scrollbar-width:thin;scrollbar-color:#b9d9c5 transparent}.subscription-tile{scroll-snap-align:start}
 .subscription-tile{display:flex;flex-direction:column;align-items:center;gap:8px;min-width:0;padding:17px 7px 14px;border-radius:17px;background:linear-gradient(155deg,#f7fbf8,#edf6ef);border:1px solid #e4eee6;text-align:center}
 .subscription-main{display:flex;flex-direction:column;align-items:center;gap:10px;min-width:0;width:100%;padding:0;border:0;background:none;color:#284a37;cursor:pointer}
 .subscription-logo{width:60px;height:60px;display:grid;place-items:center;border-radius:17px;background:#fff;border:1px solid #e3eae4;box-shadow:0 4px 12px rgba(18,59,34,.07);color:#0d9869;overflow:hidden}
@@ -172,7 +172,7 @@ input,select,textarea{font-weight:450}
 .subscription-empty{display:flex;flex-direction:column;align-items:center;text-align:center;gap:9px;padding:18px 5px 10px}
 .subscription-empty-icon{display:grid;place-items:center;width:45px;height:45px;border-radius:15px;background:#e8f5ed;color:#07956b}
 .subscription-empty p{margin:0;font-weight:750;color:#294b38}.subscription-empty span:not(.subscription-empty-icon){font-size:12px;color:#829487;line-height:1.5}.subscription-empty button{margin-top:6px}
-@media(max-width:390px){.subscription-grid{gap:7px}.subscription-tile{padding:13px 5px}.subscription-logo{width:50px;height:50px}.subscription-main strong{font-size:11px}}
+@media(max-width:390px){.subscription-grid{gap:7px;grid-auto-columns:calc((100% - 14px)/3)}.subscription-tile{padding:13px 5px}.subscription-logo{width:50px;height:50px}.subscription-main strong{font-size:11px}}
 </style>
 </head>
 <body>
