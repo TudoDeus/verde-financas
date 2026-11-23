@@ -195,6 +195,12 @@ input,select,textarea{font-weight:450}
 .installment-summary-totals>.installment-summary-card .bank-tile-center>small,.installment-summary-totals>.installment-summary-card .bank-tile-center>strong{display:block;text-align:center;width:100%}
 .installment-summary-totals>.installment-summary-card .bank-tile-foot span{max-width:100%;text-align:center}
 .installment-summary-totals>.installment-summary-card .bank-tile-top>.summary-card-chip,.installment-summary-totals>.installment-summary-card .bank-tile-foot>svg{display:none}
+/* Valores maiores e cartões ligeiramente mais altos, mantendo a simetria. */
+.installment-summary-totals>.installment-summary-card.bank-tile{min-height:188px;padding:22px 20px}
+.installment-summary-totals>.installment-summary-card .bank-tile-center>strong{font-size:32px!important;letter-spacing:-.9px!important}
+@media(max-width:600px){.installment-summary-totals>.installment-summary-card.bank-tile{min-height:163px;padding:17px 11px}.installment-summary-totals>.installment-summary-card .bank-tile-center>strong{font-size:clamp(19px,4.8vw,25px)!important;letter-spacing:-.75px!important}}
+@media(max-width:380px){.installment-summary-totals>.installment-summary-card .bank-tile-center>strong{font-size:clamp(17px,4.5vw,20px)!important}}
+@media(max-width:340px){.installment-summary-totals>.installment-summary-card.bank-tile{padding:15px 8px}.installment-summary-totals>.installment-summary-card .bank-tile-center>strong{font-size:16px!important}}
 </style>
 </head>
 <body>
