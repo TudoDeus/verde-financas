@@ -213,6 +213,13 @@ input,select,textarea{font-weight:450}
 .bank-carousel>.bank-tile .bank-tile-foot>svg{position:absolute;right:0;top:50%;transform:translateY(-50%)}
 .bank-carousel>.bank-tile .bank-tile-top .bank-eye{position:absolute;right:0;top:50%;transform:translateY(-50%);margin:0}
 @media(max-width:420px){.bank-carousel>.bank-tile .bank-tile-center strong{font-size:clamp(26px,7.4vw,36px)}.bank-carousel>.bank-tile .bank-tile-foot>span{font-size:11px}}
+/* Centralização dos indicadores de entradas e saídas na visão geral. */
+.grid.metrics:has(+ .installments-panel)>.metric{text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.grid.metrics:has(+ .installments-panel)>.metric .metric-head{position:relative;width:100%;justify-content:center;min-height:38px;padding:0 40px;text-align:center;box-sizing:border-box}
+.grid.metrics:has(+ .installments-panel)>.metric .metric-head>span:first-child{display:block;width:100%;text-align:center}
+.grid.metrics:has(+ .installments-panel)>.metric .metric-icon{position:absolute;right:0;top:50%;transform:translateY(-50%)}
+.grid.metrics:has(+ .installments-panel)>.metric .metric-value,.grid.metrics:has(+ .installments-panel)>.metric .metric-description{width:100%;text-align:center}
+@media(max-width:420px){.grid.metrics:has(+ .installments-panel)>.metric .metric-head{padding:0 29px;min-height:30px;font-size:11px}.grid.metrics:has(+ .installments-panel)>.metric .metric-icon{width:28px;height:28px;border-radius:9px}.grid.metrics:has(+ .installments-panel)>.metric .metric-icon svg{width:16px;height:16px}}
 </style>
 </head>
 <body>
