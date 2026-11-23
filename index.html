@@ -201,6 +201,18 @@ input,select,textarea{font-weight:450}
 @media(max-width:600px){.installment-summary-totals>.installment-summary-card.bank-tile{min-height:163px;padding:17px 11px}.installment-summary-totals>.installment-summary-card .bank-tile-center>strong{font-size:clamp(19px,4.8vw,25px)!important;letter-spacing:-.75px!important}}
 @media(max-width:380px){.installment-summary-totals>.installment-summary-card .bank-tile-center>strong{font-size:clamp(17px,4.5vw,20px)!important}}
 @media(max-width:340px){.installment-summary-totals>.installment-summary-card.bank-tile{padding:15px 8px}.installment-summary-totals>.installment-summary-card .bank-tile-center>strong{font-size:16px!important}}
+/* Cards de contas e cartões da tela inicial: conteúdo centralizado. */
+.bank-carousel>.bank-tile{text-align:center;align-items:stretch}
+.bank-carousel>.bank-tile .bank-tile-top,.bank-carousel>.bank-tile .bank-tile-foot{justify-content:center;text-align:center;position:relative}
+.bank-carousel>.bank-tile .bank-tile-top>span:first-child{display:inline-flex;align-items:center;justify-content:center;gap:7px;max-width:calc(100% - 52px);text-align:center}
+.bank-carousel>.bank-tile.credit .bank-tile-top{flex-direction:column;gap:4px}
+.bank-carousel>.bank-tile.credit .bank-tile-top>span:first-child{max-width:100%}
+.bank-carousel>.bank-tile .bank-tile-center{text-align:center;width:100%;min-width:0}
+.bank-carousel>.bank-tile .bank-tile-center small,.bank-carousel>.bank-tile .bank-tile-center strong{display:block;text-align:center}
+.bank-carousel>.bank-tile .bank-tile-foot>span{max-width:calc(100% - 30px);text-align:center;line-height:1.4}
+.bank-carousel>.bank-tile .bank-tile-foot>svg{position:absolute;right:0;top:50%;transform:translateY(-50%)}
+.bank-carousel>.bank-tile .bank-tile-top .bank-eye{position:absolute;right:0;top:50%;transform:translateY(-50%);margin:0}
+@media(max-width:420px){.bank-carousel>.bank-tile .bank-tile-center strong{font-size:clamp(26px,7.4vw,36px)}.bank-carousel>.bank-tile .bank-tile-foot>span{font-size:11px}}
 </style>
 </head>
 <body>
